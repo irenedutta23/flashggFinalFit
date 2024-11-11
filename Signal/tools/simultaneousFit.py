@@ -24,7 +24,7 @@ pLUT['DCB']['n1_p2'] = [0.0,-0.001,0.001]
 pLUT['DCB']['n2_p0'] = [20.,1.00001,500]
 pLUT['DCB']['n2_p1'] = [0.0,-0.1,0.1]
 pLUT['DCB']['n2_p2'] = [0.0,-0.001,0.001]
-pLUT['DCB']['a1_p0'] = [1.,1.,10.]
+pLUT['DCB']['a1_p0'] = [1.,0.,10.]
 pLUT['DCB']['a1_p1'] = [0.0,-0.1,0.1]
 pLUT['DCB']['a1_p2'] = [0.0,-0.001,0.001]
 pLUT['DCB']['a2_p0'] = [1.,1.,20.]
@@ -72,7 +72,6 @@ def poisson_interval(x,eSumW2,level=0.68):
 #def calcChi2(x,pdf,d,errorType="Sumw2",_verbose=False,fitRange=[100,180]):
 #def calcChi2(x,pdf,d,errorType="Poisson",_verbose=False,fitRange=[110,140]):
 def calcChi2(x,pdf,d,errorType="Poisson",_verbose=False,fitRange=[110,140]):
-
   k = 0. # number of non empty bins (for calc degrees of freedom)
   normFactor = d.sumEntries()
   
@@ -132,6 +131,7 @@ def calcChi2(x,pdf,d,errorType="Poisson",_verbose=False,fitRange=[110,140]):
 
 # Function to add chi2 for multiple mass points
 def nChi2Addition(X,ssf,verbose=False):
+  
   # X: vector of param values (updated with minimise function)
   # Loop over parameters and set RooVars
   for i in range(len(X)): ssf.FitParameters[i].setVal(X[i])
@@ -175,7 +175,7 @@ class SimultaneousFit:
     self.xvar.setVal(125)
     self.xvar.setBins(self.nBins)
     # Dicts to store all fit vars, polynomials, pdfs and splines
-    self.nGaussians = 1
+    self.nGaussians = 2
     self.Vars = od()
     self.Varlists = od()
     self.Polynomials = od()
@@ -226,7 +226,6 @@ class SimultaneousFit:
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
   def buildDCBplusGaussian(self,_recursive=True):
-
     # DCB
     # Define polynominal functions (in dMH)
     for f in ['dm','sigma','n1','n2','a1','a2']: 
@@ -264,16 +263,17 @@ class SimultaneousFit:
       self.Vars['frac_p%g'%po] = ROOT.RooRealVar("frac_p%g"%po,"frac_p%g"%po,pLUT['Frac']['p%g'%po][0],pLUT['Frac']['p%g'%po][1],pLUT['Frac']['p%g'%po][2])
       self.Varlists['frac'].add( self.Vars['frac_p%g'%po] )
     # Define Polynomial
-    self.Polynomials['frac'] = ROOT.RooPolyVar('frac','frac',self.dMH,self.Varlists['frac'])
+    self.Polynomials['frac'] = ROOT.RooPolyVar('frac','frac',self.dMH,self.Varlists['frac']) #dMH*frac_p0?
     # Constrain fraction to not be above 1 or below 0
     self.Polynomials['frac_constrained'] = ROOT.RooFormulaVar("frac_constrained","frac_constrained","(@0>0)*(@0<1)*@0+(@0>1.0)*0.9999",ROOT.RooArgList(self.Polynomials['frac']))
+    # [(dMH*frac_p0) >0]*[(dMH*frac_p0) < 1]*(dMH*frac_p0) + [(dMH*frac_p0) > 1.]*0.9999 => varies between 0. and 1.9999 of dMh?
     self.Coeffs['frac_constrained'] = self.Polynomials['frac_constrained' ]
 
     # Define total PDF
     _pdfs, _coeffs = ROOT.RooArgList(), ROOT.RooArgList()
     for pdf in ['dcb','gaus']: _pdfs.add(self.Pdfs[pdf])
     _coeffs.add(self.Coeffs['frac_constrained'])
-    self.Pdfs['final'] = ROOT.RooAddPdf("%s_%s"%(self.proc,self.cat),"%s_%s"%(self.proc,self.cat),_pdfs,_coeffs,_recursive)
+    self.Pdfs['final'] = ROOT.RooAddPdf("%s_%s"%(self.proc,self.cat),"%s_%s"%(self.proc,self.cat),_pdfs,_coeffs,_recursive) # (frac_constrained)*dcb+ (1-frac_constrained)*gaus
     
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
   def buildNGaussians(self,nGaussians,_recursive=True):
@@ -327,8 +327,10 @@ class SimultaneousFit:
     
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
   def runFit(self):
-    # Extract fit variables: remove xvar from fit parameters
-    fv = self.Pdfs['final'].getVariables().Clone()
+    
+    # Extract fit variables: remove xvar (Diphoton_Mass) from fit parameters
+    fv = self.Pdfs['final'].getVariables().Clone( )#RooArgSet::parameters = (Diphoton_Mass,MH,a1_dcb_p0,a2_dcb_p0,dm_dcb_p0,frac_p0,n1_dcb_p0,n2_dcb_p0,sigma_dcb_p0,sigma_gaus_p0)
+    #For debugging, try fv["Diphoton_Mass"].getVal()
     fv.remove(self.xvar)
     self.FitParameters = ROOT.RooArgList(fv)
     

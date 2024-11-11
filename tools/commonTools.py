@@ -18,12 +18,12 @@ def extractWSFileNames( _inputWSDir ):
   if not os.path.isdir(_inputWSDir):
     print(" --> [ERROR] No such directory (%s)")
     return False
-  return glob.glob("%s/output_*.root"%_inputWSDir)
+  return glob.glob("%s/Signal_output_*.root"%_inputWSDir)
 
 def extractListOfProcs( _listOfWSFileNames ):
   procs = []
   for fName in _listOfWSFileNames:
-    p = fName.split("pythia8_")[1].split(".root")[0]
+    p = fName.split("M125_")[1].split(".root")[0]
     if p not in procs: procs.append(p)
   return ",".join(procs)
 
@@ -106,6 +106,7 @@ procToDataMap['THW'] = 'thw'
 procToDataMap['GG2HQQ'] = 'ggzh'
 procToDataMap['GG2HLL'] = 'ggzh'
 procToDataMap['GG2HNUNU'] = 'ggzh'
+procToDataMap['GG2HH'] = 'gghh'
 def procToData( _proc ):
   k = _proc.split("_")[0]
   if k in procToDataMap: _proc = re.sub( k, procToDataMap[k], _proc )

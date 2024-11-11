@@ -19,6 +19,7 @@ def get_options():
   parser.add_option('--jobOpts', dest='jobOpts', default='', help="Additional options to add to job submission. For Condor separate individual options with a colon (specify all within quotes e.g. \"option_xyz = abc+option_123 = 456\")")
   parser.add_option('--groupSignalFitJobsByCat', dest='groupSignalFitJobsByCat', default=False, action="store_true", help="Option to group signalFit jobs by category")
   parser.add_option('--printOnly', dest='printOnly', default=False, action="store_true", help="Dry run: print submission files only")
+  parser.add_option('--skipVertexSplit', dest='skipVertexSplit', default=True, action="store_true", help="Skipping vertex split for HH")
   return parser.parse_args()
 (opt,args) = get_options()
 
@@ -46,6 +47,7 @@ if opt.inputConfig != '':
     options['analysis']     = _cfg['analysis']
     options['year']         = _cfg['year']
     options['massPoints']   = _cfg['massPoints']
+    options['xvar']         = _cfg['xvar']
     options['scales']       = _cfg['scales']
     options['scalesCorr']   = _cfg['scalesCorr']
     options['scalesGlobal'] = _cfg['scalesGlobal']
@@ -58,7 +60,8 @@ if opt.inputConfig != '':
     options['jobOpts']                 = opt.jobOpts
     options['groupSignalFitJobsByCat'] = opt.groupSignalFitJobsByCat
     options['printOnly']               = opt.printOnly
-  
+    options['skipVertexSplit']         = opt.skipVertexSplit
+
     #Delete copy of file
     os.system("rm config.py")
   
@@ -103,6 +106,9 @@ print(" --> Input flashgg ws dir: %s"%options['inputWSDir'])
 print(" --> Processes: %s"%options['procs'])
 print(" --> Categories: %s"%options['cats'])
 print(" --> Mass points: %s --> Low = %s, High = %s"%(options['massPoints'],options['massLow'],options['massHigh']))
+print(" --> Variable for fitting: %s"%options['xvar'])
+if options['skipVertexSplit']:
+  print(" --> Skipping Vertex Split option with  %s"%options['skipVertexSplit'])
 print(" --> Extension: %s"%options['ext'])
 print(" --> Analysis: %s"%options['analysis'])
 print(" --> Year: %s ::: Corresponds to intLumi = %.2f fb^-1"%(options['year'],lumiMap[options['year']]))

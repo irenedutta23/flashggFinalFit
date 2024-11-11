@@ -51,7 +51,7 @@ def add_vars_to_workspace(_ws=None,_data=None,_stxsVar=None):
   _vars = od()
   for var in _data.columns:
     if var in ['type','cat',_stxsVar,'']: continue
-    if var == "CMS_hgg_mass": 
+    if var == "Diphoton_Mass":#"CMS_hgg_mass": 
       _vars[var] = ROOT.RooRealVar(var,var,125.,100.,180.)
       _vars[var].setBins(160)
     elif var == "dZ": 
@@ -112,7 +112,7 @@ if opt.year == '2018': systematics.append("JetHEM")
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UPROOT file
 f = uproot.open(opt.inputTreeFile)
-if inputTreeDir == '': listOfTreeNames == f.keys()
+if inputTreeDir == '': listOfTreeNames = f.keys()
 else: listOfTreeNames = f[inputTreeDir].keys()
 # If cats = 'auto' then determine from list of trees
 if cats == 'auto':
@@ -131,8 +131,9 @@ if opt.doSystematics: sdata = pandas.DataFrame()
 # Loop over categories: fill dataframe
 for cat in cats:
   print( " --> Extracting events from category: %s"%cat)
-  if inputTreeDir == '': treeName = "%s_%s_%s_%s"%(opt.productionMode,opt.inputMass,sqrts__,cat)
-  else: treeName = "%s/%s_%s_%s_%s"%(inputTreeDir,opt.productionMode,opt.inputMass,sqrts__,cat)
+  sqrts_temp='13p6TeV'
+  if inputTreeDir == '': treeName = "%s_%s_%s_%s"%(opt.productionMode,opt.inputMass,sqrts_temp,cat)
+  else: treeName = "%s/%s_%s_%s_%s"%(inputTreeDir,opt.productionMode,opt.inputMass,sqrts_temp,cat)
   print("    * tree: %s"%treeName)
   # Extract tree from uproot
   t = f[treeName]
