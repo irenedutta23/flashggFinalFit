@@ -41,9 +41,9 @@ def add_vars_to_workspace(_ws=None,_dataVars=None):
   getattr(_ws,'import')(intLumi)
   _vars = od()
   for var in _dataVars:
-    if var == "CMS_hgg_mass":
+    if var == "Diphoton_Mass":
       _vars[var] = ROOT.RooRealVar(var,var,125.,100.,180.)
-      _vars[var].setBins(160)
+      _vars[var].setBins(100)
     elif var == "dZ":
       _vars[var] = ROOT.RooRealVar(var,var,0.,-20.,20.)
       _vars[var].setBins(40)
@@ -85,7 +85,7 @@ else:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # UPROOT file
 f = uproot.open(opt.inputTreeFile)
-if inputTreeDir == '': listOfTreeNames == f.keys()
+if inputTreeDir == '': listOfTreeNames = f.keys()
 else: listOfTreeNames = f[inputTreeDir].keys()
 # If cats = 'auto' then determine from list of trees
 if cats == 'auto':
@@ -98,10 +98,9 @@ if cats == 'auto':
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Open input ROOT file
 f = ROOT.TFile(opt.inputTreeFile)
-
 # Open output ROOT file and initiate workspace to store RooDataSets
-if opt.outputWSDir is not None: outputWSDir = opt.outputWSDir+"/ws"
-else: outputWSDir = "/".join(opt.inputTreeFile.split("/")[:-1])+"/ws"
+if opt.outputWSDir is not None: outputWSDir = opt.outputWSDir+"/ws_data"
+else: outputWSDir = "/".join(opt.inputTreeFile.split("/")[:-1])+"/ws_data"
 if not os.path.exists(outputWSDir): os.system("mkdir %s"%outputWSDir)
 outputWSFile = outputWSDir+"/"+opt.inputTreeFile.split("/")[-1]
 print(" --> Creating output workspace: (%s)"%outputWSFile)
@@ -119,8 +118,9 @@ aset = make_argset(ws,varNames)
 # Loop over categories and 
 for cat in cats:
   print(" --> Extracting events from category: %s"%cat)
-  if inputTreeDir == '': treeName = "Data_%s_%s"%(sqrts__,cat)
-  else: treeName = "%s/Data_%s_%s"%(inputTreeDir,sqrts__,cat)
+  #if inputTreeDir == '': treeName = "Data_%s_%s"%(sqrts__,cat)
+  #else: treeName = "%s/Data_%s_%s"%(inputTreeDir,sqrts__,cat)
+  treeName = "gghh_125_13p6TeV_%s"%(cat) ## this should be changed. 
   print("    * tree: %s"%treeName)
   t = f.Get(treeName)
 
@@ -131,7 +131,7 @@ for cat in cats:
   # Loop over events in tree and add to dataset with weight 1
   for ev in t:
     if opt.applyMassCut:
-      if(getattr(ev,"CMS_hgg_mass") < float(opt.massCutRange.split(",")[0])) | (getattr(ev,"CMS_hgg_mass") > float(opt.massCutRange.split(",")[1])): continue
+      if(getattr(ev,"Diphoton_Mass") < float(opt.massCutRange.split(",")[0])) | (getattr(ev,"Diphoton_Mass") > float(opt.massCutRange.split(",")[1])): continue
     for var in dataVars: 
       if var == "weight": continue
       ws.var(var).setVal(getattr(ev,var))
