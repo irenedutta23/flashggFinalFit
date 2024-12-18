@@ -6,10 +6,15 @@ trees2wsCfg = {
   'inputTreeDir':'',
   #'listOfTreeNames' :['ntuple'],
   # Variables to be added to dataframe: use wildcard * for common strings
-  'mainVars':["Diphoton_Mass","weight"],#"dZ","weight_*"], # Var for the nominal RooDataSets
+  
+  #new_event_weight is event_weight/(xs*br*lumi)-> extra branch added by hand for FlashggFinalFit datacards
+  'mainVars':["Diphoton_Mass","new_event_weight"],#"dZ","weight_*"], # Var for the nominal RooDataSets
+  
+  ### ^^^^ IF YOU CHANGE THE EVENT WEIGHT VAR NAME HERE, ALSO CHANGE IN TREE2WS.PY ^^^^^
+  
   'dataVars':["Diphoton_Mass","weight"], # Vars to be added for data
   'stxsVar':'',
-  'systematicsVars':["Diphoton_Mass","weight"], # Variables to add to sytematic RooDataHists
+  'systematicsVars':["Diphoton_Mass","new_event_weight"], # Variables to add to sytematic RooDataHists
   'theoryWeightContainers':{},
 
   # List of systematics: use string YEAR for year-dependent systematics

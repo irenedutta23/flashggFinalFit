@@ -52,12 +52,12 @@ def add_vars_to_workspace(_ws=None,_data=None,_stxsVar=None):
   for var in _data.columns:
     if var in ['type','cat',_stxsVar,'']: continue
     if var == "Diphoton_Mass":#"CMS_hgg_mass": 
-      _vars[var] = ROOT.RooRealVar(var,var,125.,100.,180.)
-      _vars[var].setBins(160)
+      _vars[var] = ROOT.RooRealVar(var,var,125.,103.,160.)
+      _vars[var].setBins(114)
     elif var == "dZ": 
       _vars[var] = ROOT.RooRealVar(var,var,0.,-20.,20.)
       _vars[var].setBins(40)
-    elif var == "weight": 
+    elif var == "new_event_weight": 
       _vars[var] = ROOT.RooRealVar(var,var,0.)
     else:
       _vars[var] = ROOT.RooRealVar(var,var,1.,-999999,999999)
@@ -264,13 +264,13 @@ for stxsId in data[stxsVar].unique():
 
     # Define RooDataSet
     dName = "%s_%s_%s_%s"%(opt.productionMode,opt.inputMass,sqrts__,cat)
-    d = ROOT.RooDataSet(dName,dName,aset,'weight') 
+    d = ROOT.RooDataSet(dName,dName,aset,'new_event_weight') 
 
     # Loop over events in dataframe and add entry
     for row in df[mask][varNames].to_numpy():
       for i, val in enumerate(row):
         aset[i].setVal(val)
-      d.add(aset,aset.getRealValue("weight"))
+      d.add(aset,aset.getRealValue("new_event_weight"))
 
     # Add to workspace
     getattr(ws,'import')(d)
