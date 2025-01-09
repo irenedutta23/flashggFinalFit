@@ -35,7 +35,7 @@ def get_options():
   parser.add_option("--cat", dest='cat', default='', help="RECO category")
   parser.add_option('--mass', dest='mass', default='125', help="Mass point to fit")
   parser.add_option('--doPlots', dest='doPlots', default=False, action="store_true", help="Produce Signal fTest plots")
-  parser.add_option('--nBins', dest='nBins', default=80, type='int', help="Number of bins for fit")
+  parser.add_option('--nBins', dest='nBins', default=100, type='int', help="Number of bins for fit")
   parser.add_option('--threshold', dest='threshold', default=30, type='int', help="Threshold number of events")
   parser.add_option('--nGaussMax', dest='nGaussMax', default=5, type='int', help="Max number of gaussians to test")
   parser.add_option('--skipWV', dest='skipWV', default=False, action="store_true", help="Skip processing of WV case")
@@ -51,7 +51,7 @@ if opt.doPlots:
   if not os.path.isdir("%s/outdir_%s/fTest/Plots"%(swd__,opt.ext)): os.system("mkdir %s/outdir_%s/fTest/Plots"%(swd__,opt.ext))
 
 # Load xvar to fit
-nominalWSFileName = glob.glob("%s/output*"%(opt.inputWSDir))[0]
+nominalWSFileName = glob.glob("%s/Signal_output*"%(opt.inputWSDir))[0]
 f0 = ROOT.TFile(nominalWSFileName,"read")
 inputWS0 = f0.Get(inputWSName__)
 xvar = inputWS0.var(opt.xvar)
@@ -103,12 +103,11 @@ for pidx, proc in enumerate(procsToFTest):
   # If numEntries below threshold then keep as n = 1
   if datasets_RV[opt.mass].numEntries() < opt.threshold: continue  
   else:
-    
     ssfs = od()
     min_reduced_chi2, nGauss_opt = 999, 1
     for nGauss in range(1,opt.nGaussMax+1):
       k = "nGauss_%g"%nGauss
-      ssf = SimultaneousFit("fTest_RV_%g"%nGauss,proc,opt.cat,datasets_RV,xvar.Clone(),MH,MHLow,MHHigh,opt.mass,opt.nBins,0,opt.minimizerMethod,opt.minimizerTolerance,verbose=False)
+      ssf = SimultaneousFit("fTest_RV_%g"%nGauss,proc,opt.cat,datasets_RV,xvar.Clone(),MH,MHLow,MHHigh,opt.mass,opt.nBins,0,opt.minimizerMethod,opt.minimizerTolerance,verbose=True)
       ssf.buildNGaussians(nGauss)
       ssf.runFit()
       ssf.buildSplines()
@@ -125,7 +124,6 @@ for pidx, proc in enumerate(procsToFTest):
       
       plotFTest(ssfs,_opt=nGauss_opt,_outdir="%s/outdir_%s/fTest/Plots"%(swd__,opt.ext),_extension="RV",_proc=proc,_cat=opt.cat,_mass=opt.mass)
       plotFTestResults(ssfs,_opt=nGauss_opt,_outdir="%s/outdir_%s/fTest/Plots"%(swd__,opt.ext),_extension="RV",_proc=proc,_cat=opt.cat,_mass=opt.mass)
-#import pdb;pdb.set_trace();
 #      if (opt.skipWV) : 
 #        plotFTest(ssfs,_opt=nGauss_opt,_outdir="%s/outdir_%s/fTest/Plots"%(swd__,opt.ext),_extension="total_",_proc=proc,_cat=opt.cat,_mass=opt.mass)
 #      else: 

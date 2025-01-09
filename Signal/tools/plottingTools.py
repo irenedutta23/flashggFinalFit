@@ -86,7 +86,8 @@ def plotFTest(ssfs,_opt=1,_outdir='./',_extension='',_proc='',_cat='',_mass='125
     hists[k].SetMinimum(0)
     if hists[k].GetMaximum()>hmax: hmax = hists[k].GetMaximum()
     if hists[k].GetMinimum()<hmin: hmin = hists[k].GetMinimum()
-    hists[k].GetXaxis().SetRangeUser(115,140)
+    #hists[k].GetXaxis().SetRangeUser(115,140)
+    hists[k].GetXaxis().SetRangeUser(110,140)
   # Extract data histogram
   hists['data'] = ssf.xvar.createHistogram("h_data%s"%_extension,ROOT.RooFit.Binning(ssf.nBins))
   ssf.DataHists[_mass].fillHistogram(hists['data'],ROOT.RooArgList(ssf.xvar))
@@ -97,7 +98,8 @@ def plotFTest(ssfs,_opt=1,_outdir='./',_extension='',_proc='',_cat='',_mass='125
   hists['data'].SetTitle("")
   hists['data'].GetXaxis().SetTitle("m_{#gamma#gamma} [GeV]")
   hists['data'].SetMinimum(0)
-  hists['data'].GetXaxis().SetRangeUser(115,140)
+  #hists['data'].GetXaxis().SetRangeUser(115,140)
+  hists['data'].GetXaxis().SetRangeUser(110,140)
   if hists['data'].GetMaximum()>hmax: hmax = hists['data'].GetMaximum()
   if hists['data'].GetMinimum()<hmin: hmin = hists['data'].GetMinimum()
 
@@ -201,7 +203,7 @@ def plotPdfComponents(ssf,_outdir='./',_extension='',_proc='',_cat=''):
   if hists['final'].GetMaximum()>hmax: hmax = hists['final'].GetMaximum()
   if hists['final'].GetMinimum()<hmin: hmin = hists['final'].GetMinimum()
   #hists['final'].GetXaxis().SetRangeUser(115,140)
-  hists['final'].GetXaxis().SetRangeUser(100,150)
+  hists['final'].GetXaxis().SetRangeUser(110,140)
   # Create data histogram
   hists['data'] = ssf.xvar.createHistogram("h_data%s"%_extension,ROOT.RooFit.Binning(ssf.nBins))
   ssf.DataHists['125'].fillHistogram(hists['data'],ROOT.RooArgList(ssf.xvar))
@@ -209,7 +211,7 @@ def plotPdfComponents(ssf,_outdir='./',_extension='',_proc='',_cat=''):
   hists['data'].GetXaxis().SetTitle("m_{#gamma#gamma} [GeV]")
   hists['data'].SetMinimum(0)
   #hists['data'].GetXaxis().SetRangeUser(115,140)
-  hists['data'].GetXaxis().SetRangeUser(100,150)
+  hists['data'].GetXaxis().SetRangeUser(110,140)
   hists['data'].Scale(float(ssf.nBins)/1600)
   hists['data'].SetMarkerStyle(20)
   hists['data'].SetMarkerColor(1)

@@ -54,8 +54,8 @@ namespace po = program_options;
 
 bool BLIND = true;
 bool runFtestCheckWithToys=false;
-int mgg_low =100;
-int mgg_high =180;
+int mgg_low =103;
+int mgg_high =160;
 int nBinsForMass = 4*(mgg_high-mgg_low);
 
 RooRealVar *intLumi_ = new RooRealVar("IntLumi","hacked int lumi", 1000.);
@@ -732,7 +732,7 @@ int main(int argc, char* argv[]){
 	vector<map<string,RooAbsPdf*> > pdfs_vec;
 
 	PdfModelBuilder pdfsModel;
-	RooRealVar *mass = (RooRealVar*)inWS->var("CMS_hgg_mass");
+	RooRealVar *mass = (RooRealVar*)inWS->var("Diphoton_Mass");
 	std:: cout << "[INFO] Got mass from ws " << mass << std::endl;
 	pdfsModel.setObsVar(mass);
 	double upperEnvThreshold = 0.1; // upper threshold on delta(chi2) to include function in envelope (looser than truth function)

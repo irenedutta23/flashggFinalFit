@@ -74,7 +74,6 @@ def poisson_interval(x,eSumW2,level=0.68):
 def calcChi2(x,pdf,d,errorType="Poisson",_verbose=False,fitRange=[110,140]):
   k = 0. # number of non empty bins (for calc degrees of freedom)
   normFactor = d.sumEntries()
-  
   # Using numpy and poisson error
   bins, nPdf, nData, eDataSumW2 = [], [],[],[]
   for i in range(d.numEntries()):
@@ -131,7 +130,6 @@ def calcChi2(x,pdf,d,errorType="Poisson",_verbose=False,fitRange=[110,140]):
 
 # Function to add chi2 for multiple mass points
 def nChi2Addition(X,ssf,verbose=False):
-  
   # X: vector of param values (updated with minimise function)
   # Loop over parameters and set RooVars
   for i in range(len(X)): ssf.FitParameters[i].setVal(X[i])
@@ -175,7 +173,7 @@ class SimultaneousFit:
     self.xvar.setVal(125)
     self.xvar.setBins(self.nBins)
     # Dicts to store all fit vars, polynomials, pdfs and splines
-    self.nGaussians = 2
+    self.nGaussians = 1
     self.Vars = od()
     self.Varlists = od()
     self.Polynomials = od()
@@ -280,7 +278,7 @@ class SimultaneousFit:
 
     # Set number of gaussians
     self.nGaussians = nGaussians
-
+    
     # Loop over NGaussians
     for g in range(0,nGaussians):
       # Define polynominal functions for mean and sigma (in MH)
@@ -298,7 +296,7 @@ class SimultaneousFit:
         # Define polynominal
         self.Polynomials[k] = ROOT.RooPolyVar(k,k,self.dMH,self.Varlists[k])
       # Mean function
-      self.Polynomials['mean_g%g'%g] = ROOT.RooFormulaVar("mean_g%g"%g,"mean_g%g"%g,"(@0+@1)",ROOT.RooArgList(self.MH,self.Polynomials['dm_g%g'%g]))
+      self.Polynomials['mean_g%g'%g] = ROOT.RooFormulaVar("mean_g%g"%g,"mean_g%g"%g,"(@0+@1)",ROOT.RooArgList(self.MH,self.Polynomials['dm_g%g'%g])) #mean of gaussian
       # Build Gaussian
       self.Pdfs['gaus_g%g'%g] = ROOT.RooGaussian("gaus_g%g"%g,"gaus_g%g"%g,self.xvar,self.Polynomials['mean_g%g'%g],self.Polynomials['sigma_g%g'%g])
 
@@ -329,7 +327,8 @@ class SimultaneousFit:
   def runFit(self):
     
     # Extract fit variables: remove xvar (Diphoton_Mass) from fit parameters
-    fv = self.Pdfs['final'].getVariables().Clone( )#RooArgSet::parameters = (Diphoton_Mass,MH,a1_dcb_p0,a2_dcb_p0,dm_dcb_p0,frac_p0,n1_dcb_p0,n2_dcb_p0,sigma_dcb_p0,sigma_gaus_p0)
+    fv = self.Pdfs['final'].getVariables().Clone( )#RooArgSet::parameters for DCB = (Diphoton_Mass,MH,a1_dcb_p0,a2_dcb_p0,dm_dcb_p0,frac_p0,n1_dcb_p0,n2_dcb_p0,sigma_dcb_p0,sigma_gaus_p0)
+    #RooArgSet::parameters for fTest/ nGauss = (Diphoton_Mass,MH,dm_g0_p0,sigma_g0_p0)
     #For debugging, try fv["Diphoton_Mass"].getVal()
     fv.remove(self.xvar)
     self.FitParameters = ROOT.RooArgList(fv)

@@ -30,6 +30,11 @@ globalReplacementMap['testV_231024'] = od()
 globalReplacementMap['testV_231024']['proc'] = "GG2HH"
 globalReplacementMap['testV_231024']['cat'] = "ntuple"
 
+globalReplacementMap['v2_181224'] = od()
+#test bbgg analysis
+globalReplacementMap['v2_181224']['proc'] = "GG2HH"
+globalReplacementMap['v2_181224']['cat'] = "ntuple"
+
 # Tutorial analysis
 globalReplacementMap['tutorial'] = od()
 # For WRONG VERTEX SCENARIO:
