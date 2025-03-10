@@ -1,13 +1,14 @@
 import ROOT
 
 # Open the input ROOT file and get the input tree
-input_file = ROOT.TFile("input_testV_231024/Signal_output_M125.root", "READ")
+input_file = ROOT.TFile("input_v2_181224/SingleH_forIrene.root", "READ")
 # Names of the trees in the input file
 tree_names = ["gghh_125_13p6TeV_cat0", "gghh_125_13p6TeV_cat1", "gghh_125_13p6TeV_cat2"]  # Replace with the actual tree names
-scale_factor = 34.43 * 0.0026 * 34.7
+#scale_factor = 34.43 * 0.0026 * 34.7 #ggHH
+scale_factor = 59.2148 * 1000 * 0.00227 * 34.7 #for combined single H file
 
 # Create the output ROOT file and clone the tree structure
-output_file = ROOT.TFile("input_testV_231024/Signal_output_M125_new.root", "RECREATE")
+output_file = ROOT.TFile("input_v2_181224/SingleH_output_M125.root", "RECREATE")
 for tree_name in tree_names:
     input_tree = input_file.Get(tree_name)  # Replace 'tree_name' with the actual tree name
     output_tree = input_tree.CloneTree(0)  # Clone only the structure, not the entries

@@ -40,7 +40,7 @@ productionModes = ['ggH','qqH','ttH','tHq','tHW','ggZH','WH','ZH','bbH']
 decayMode = 'hgg'
 
 # List of years
-years_to_process = ['2016','2017','2018','2022preEE','2022postEE']
+years_to_process = ['2022']#['2016','2017','2018','2022preEE','2022postEE']
 
 # flashgg input WS objects
 inputWSName__ = "tagsDumper/cms_hgg_13TeV"

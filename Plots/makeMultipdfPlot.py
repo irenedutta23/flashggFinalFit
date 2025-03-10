@@ -22,7 +22,7 @@ def get_options():
   parser.add_option("--doZeroes", dest="doZeroes", default=False, action="store_true", help="Add error of unity to zero bins to show on plot")
   parser.add_option("--ext", dest="ext", default='', help="Extension for saving")
   parser.add_option("--mass", dest="mass", default=125.38, help="Higgs mass")
-  parser.add_option("--xvar", dest="xvar", default="CMS_hgg_mass,m_{#gamma#gamma},GeV", help="X-variable: name,title,units")
+  parser.add_option("--xvar", dest="xvar", default="Diphoton_Mass,m_{#gamma#gamma},GeV", help="X-variable: name,title,units")
   parser.add_option("--nBins", dest="nBins", default=80, type='int', help="Number of bins")
   parser.add_option("--pdfNBins", dest="pdfNBins", default=3200, type='int', help="Number of bins")
   parser.add_option("--translateCats", dest="translateCats", default=None, help="JSON to store cat translations")
@@ -47,16 +47,16 @@ xvar.setUnit(opt.xvar.split(",")[2])
 xvar_arglist, xvar_argset = ROOT.RooArgList(xvar), ROOT.RooArgSet(xvar)
 
 # Exact multipdf object and pdfindex
-multipdf = w.pdf("CMS_hgg_%s_13TeV_bkgshape"%opt.cat)
-pdfindex_bf = w.cat("pdfindex_%s_13TeV"%opt.cat).getIndex()
+multipdf = w.pdf("CMS_hgg_%s_2022_13TeV_bkgshape"%opt.cat)
+pdfindex_bf = w.cat("pdfindex_%s_2022_13TeV"%opt.cat).getIndex()
 bpdf_bf_name = None
 bpdfs = od()
-for ipdf in range(multipdf.getNumPdfs()): 
+for ipdf in range(multipdf.getNumPdfs()):
   bpdfs[multipdf.getPdf(ipdf).GetName()] = w.pdf(multipdf.getPdf(ipdf).GetName())
   if ipdf == pdfindex_bf: bpdf_bf_name = multipdf.getPdf(ipdf).GetName()
 
 # Make histograms from bpdfs and scale by norm
-norm = w.var("CMS_hgg_%s_13TeV_bkgshape_norm"%opt.cat).getVal()
+norm = w.var("CMS_hgg_%s_2022_13TeV_bkgshape_norm"%opt.cat).getVal()
 
 hists = od()
 for bname, bpdf in list(bpdfs.items()):
@@ -108,7 +108,7 @@ if opt.inputSignalWSFile is not None:
   fsig = ROOT.TFile(opt.inputSignalWSFile)
   wsig = fsig.Get("wsig_13TeV")
   wsig.var("MH").setVal(float(opt.mass))
-
+  
   # Extract norms
   norms = od()
   spdfs = od()
@@ -125,7 +125,7 @@ if opt.inputSignalWSFile is not None:
       pdf = wsig.pdf("%s_%s"%(outputWSObjectTitle__,_id))
       spdfs[_id] = pdf.createHistogram("h_pdf_%s"%_id,xvar,ROOT.RooFit.Binning(opt.pdfNBins))
       spdfs[_id].Scale(norms[k].getVal()*(float(opt.pdfNBins)/float(opt.nBins)))
-
+      #spdfs[_id].Scale(10.0*(float(opt.pdfNBins)/float(opt.nBins)))
   # Sum pdf histograms
   for _id, p in list(spdfs.items()):
     if 'spdf' not in hists:

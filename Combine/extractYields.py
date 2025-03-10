@@ -32,6 +32,7 @@ def procToProcS0(p):
   elif "tHq" in p: return "thq"
   elif "tHW" in p: return "thw"
   elif "bbH" in p: return "bbh"
+  elif "GG2HH" in p: return "gghh"
   else: 
     print(" --> [ERROR] proc s0 not realised for process %s. Leaving"%p)
     exit(0)
